@@ -1,0 +1,25 @@
+/* DeathRayGames Branding */
+footer {
+	padding-right: 5em;
+	background-repeat: no-repeat, no-repeat;
+	background-position: 95% center, 85% center;
+	background-size: 64px 64px, 64px 64px;
+	background-image: url('../images/deathray_icon_64x64.png'), url('../images/boots1_flat_300.png');
+}
+/* Tavern King branding */
+header {
+	background-image: none;
+	font-family: 'UnifrakturCook';
+	text-align: center;
+}
+body > .game {
+	padding: 0;
+}
+#game-topbar {
+	color: white;
+	padding: 0.5em 0;
+}
+#game-topbar > span {
+	display: inline-block;
+	margin: 0 2em;
+}

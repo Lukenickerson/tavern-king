@@ -21,7 +21,7 @@
 	//==== Stage Functions
 	Stage.prototype.addLayer = function(){
 		this.layerOngoingCounter++;
-		var layer = new this.Layer(this);
+		var layer = new this.Layer(this, "canvas");
 		console.log(layer);
 		this.element.appendChild(layer.element);
 		this.layers.push(layer);
@@ -89,24 +89,27 @@
 	Stage.prototype.Camera.prototype.follow = function(coords){
 		this.followCoords = coords;
 		this.adjust();
+		return this;
 	}
 	Stage.prototype.Camera.prototype.stop = function(){
 		this.adjust();
 		this.followCoords = null;
+		return this;
 	}
 	Stage.prototype.Camera.prototype.adjust = function(coords){
 		if (this.followCoords != null) {
 			this.pos.x = this.followCoords.x;
 			this.pos.y = this.followCoords.y;
 		}
+		return this;
 	}	
 	
 
 
 	//==== LAYER
-	Stage.prototype.Layer = function(stage){
+	Stage.prototype.Layer = function(stage, elementName){
 		this.stage = stage;
-		this.element = document.createElement("canvas");
+		this.element = document.createElement(elementName);
 		this.elementId = stage.elementId + "-" + stage.layerOngoingCounter;
 		// Set some values for the newly created layer element
 		this.element.id 		= this.elementId;
@@ -141,6 +144,7 @@
 	{
 		var entCount = this.entities.length;
 		this.ctx.clearRect(0,0,this.size.x,this.size.y);
+		console.log("Draw Layer" + entCount);
 		for (var i = 0; i < entCount; i++){
 			this.drawEntity(this.entities[i]);
 		}
@@ -152,7 +156,7 @@
 		stageXY.x -= ent._halfSize.x;
 		stageXY.y -= ent._halfSize.y;
 		
-		this.ctx.fillStyle = '#ff6';
+		this.ctx.fillStyle = '#ffff66';
 		this.ctx.fillRect(stageXY.x, stageXY.y, ent.size.x, ent.size.y);		
 	}
 

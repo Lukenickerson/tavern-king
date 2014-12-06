@@ -27,6 +27,7 @@ RocketBoots.ready(function(){
 	g.state.transition("mainmenu");
 	
 	
+	
 	g.loop = new rb.Looper(function(){
 		g.stage.draw();
 	});
@@ -60,6 +61,7 @@ RocketBoots.ready(function(){
 	g.stage.addClickEvent(function(p){ 
 		console.log("clicked world position", p);
 	});
-	g.loop.start();
+	g.stage.draw();
+	//g.loop.start();
 	//g.stage = new rb.Stage("game-stage");
 });

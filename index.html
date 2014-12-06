@@ -2,17 +2,17 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>[ROCKETBOOTS WEB GAME]</title>
+	<title>Tavern King</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="styles/rocketboots.css" />
 	<link rel="stylesheet" href="styles/game.css" />
-	<link href='http://fonts.googleapis.com/css?family=Contrail+One|Press+Start+2P' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Contrail+One|Press+Start+2P|UnifrakturCook:700' rel='stylesheet' type='text/css'>
 	<link rel="icon" href="images/favicon.ico" type="image/x-icon" />
 </head>
 <body>
 
 	<header class="stateHeader goto" data-state="mainmenu">
-		<h1>RocketBoots</h1>
+		<h1>Tavern King</h1>
 	</header>
 	<div class="state boot">
 		Booting Up
@@ -97,17 +97,22 @@
 	<div class="state game">
 		<h2>Game</h2>
 		<nav>
-			<button type="button" class="goto" data-state="mainmenu">Back</button>
+			<button type="button" class="goto" data-state="mainmenu">Menu</button>
 		</nav>
+		<div id="game-topbar">
+			<span class="coins">Coins: <span class="coinsNum"></span></span>
+			<span class="served">Customers Served: <span class="servedNum"></span></span>
+		</div>
 		<div id="game-stage" class="stage"></div>
 	</div>	
 	<footer class="stateFooter">
 		Developed in 48 hours for the
-		<a href="">Ludum Dare [XX] game jam (theme "[THEME]")</a>
-
+		<a href="http://ludumdare.com/compo/category/ld-31-2/" target="_blank">
+			Ludum Dare 31 game jam, theme "Entire game on one screen"
+		</a>
 		<br>
-		by [DEVELOPERS] 
-		<a href="">@twitterhandle</a>
+		by Luke Nickerson
+		<a href="https://twitter.com/deathraygames" target="_blank">@deathraygames</a>
 		<br>
 		using the
 		<a href="https://github.com/Lukenickerson/rocketboots" 
