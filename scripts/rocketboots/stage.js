@@ -19,9 +19,10 @@
 		
 	}
 	//==== Stage Functions
-	Stage.prototype.addLayer = function(){
+	Stage.prototype.addLayer = function(tagName){
+		if (typeof tagName == 'undefined') tagName = "canvas";
 		this.layerOngoingCounter++;
-		var layer = new this.Layer(this, "canvas");
+		var layer = new this.Layer(tagName, this);
 		console.log(layer);
 		this.element.appendChild(layer.element);
 		this.layers.push(layer);
@@ -75,7 +76,7 @@
 		var s = this;
 		$(this.element).click(function(e){
 			
-			fn(s.getPosition(e.offsetX, e.offsetY));
+			fn(s.getPosition(e.offsetX, e.offsetY), e);
 		});
 	}
 
@@ -85,7 +86,12 @@
 		this.pos = {x: 0, y: 0};
 		this.followCoords = null;
 	}
-
+	Stage.prototype.Camera.prototype.set = function(coords){
+		this.pos.x = coords.x;
+		this.pos.x = coords.y;
+		this.adjust();
+		return this;
+	}
 	Stage.prototype.Camera.prototype.follow = function(coords){
 		this.followCoords = coords;
 		this.adjust();
@@ -107,9 +113,10 @@
 
 
 	//==== LAYER
-	Stage.prototype.Layer = function(stage, elementName){
+	Stage.prototype.Layer = function(tagName, stage){
+		this.tagName = tagName;
 		this.stage = stage;
-		this.element = document.createElement(elementName);
+		this.element = document.createElement(tagName);
 		this.elementId = stage.elementId + "-" + stage.layerOngoingCounter;
 		// Set some values for the newly created layer element
 		this.element.id 		= this.elementId;
@@ -118,7 +125,7 @@
 		this.element.height		= stage.size.y;
 		
 		this.size = { x: stage.size.x, y: stage.size.y };
-		this.ctx = this.element.getContext('2d');
+		this.ctx = (tagName == "canvas") ? this.element.getContext('2d') : null;
 		this.entities = [];
 	}
 	//==== Layer Functions
@@ -144,11 +151,9 @@
 	{
 		var entCount = this.entities.length;
 		this.ctx.clearRect(0,0,this.size.x,this.size.y);
-		console.log("Draw Layer" + entCount);
 		for (var i = 0; i < entCount; i++){
 			this.drawEntity(this.entities[i]);
 		}
-
 	}
 	Stage.prototype.Layer.prototype.drawEntity = function(ent)
 	{
@@ -156,8 +161,22 @@
 		stageXY.x -= ent._halfSize.x;
 		stageXY.y -= ent._halfSize.y;
 		
-		this.ctx.fillStyle = '#ffff66';
-		this.ctx.fillRect(stageXY.x, stageXY.y, ent.size.x, ent.size.y);		
+		if (ent.image) {
+			this.ctx.drawImage( ent.image,
+				stageXY.x, stageXY.y, ent.size.x, ent.size.y);
+		} else {
+			this.ctx.fillStyle = '#ffff66';
+			this.ctx.fillRect(stageXY.x, stageXY.y, ent.size.x, ent.size.y);		
+		}
+		
+		if (ent.isHighlighted) {
+			if (typeof ent.customDraw.highlighted == 'function') {
+				ent.customDraw.highlighted();
+			} else {
+				this.ctx.strokeStyle = '#ff0000';
+				this.ctx.strokeRect(stageXY.x, stageXY.y, ent.size.x, ent.size.y);
+			}
+		}
 	}
 
 

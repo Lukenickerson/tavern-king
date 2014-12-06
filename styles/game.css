@@ -12,8 +12,13 @@ header {
 	font-family: 'UnifrakturCook';
 	text-align: center;
 }
+/* Styles */
+body {
+	background: #221113;
+}
 body > .game {
 	padding: 0;
+	background-color: inherit;
 }
 #game-topbar {
 	color: white;
