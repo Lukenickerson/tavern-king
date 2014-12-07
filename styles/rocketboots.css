@@ -79,7 +79,7 @@ header, footer {
 .mainmenu ul > li {
 	display: block;
 }
-nav button {
+button {
 	display: block;
 	min-width: 60%;
 	padding: 1em 0.5em;
@@ -88,11 +88,12 @@ nav button {
 	font-size: 100%;
 	border: solid 1px #999;
 	border-radius: 0.2em;
+	cursor: pointer;
 }
 nav .disk {
 	display: none;
 }
-nav button.play {
+button.play {
 	background: #ffff88;
 	padding: 2em 0.5em;
 }
@@ -105,13 +106,14 @@ nav button.play {
 	position: relative;
 	width: 100%;
 	height: 100%;
-	border: dashed gray 1px;
+	/* border: dashed gray 1px; */
+	margin: 0 auto;
 }
 .stage .layer {
 	position: absolute; top: 0; left: 0;
 	width: 100%;
 	height: 100%;
-	border: dashed red 1px;
+	/* border: dashed red 1px; */
 }
 
 

@@ -16,15 +16,51 @@ header {
 body {
 	background: #221113;
 }
+h2 {
+	font-family: 'UnifrakturCook';
+}
 body > .game {
 	padding: 0;
 	background-color: inherit;
 }
-#game-topbar {
+#game-topbar, .topbar {
 	color: white;
-	padding: 0.5em 0;
+	padding: 1.5em 0;
+	background: inherit;
 }
 #game-topbar > span {
 	display: inline-block;
 	margin: 0 2em;
 }
+.selectedMenu {
+	background: #332244;
+	color: white;
+	border: solid 0.25em white;
+	margin: 5% auto 0 auto;
+	border-radius: 1em;
+	box-shadow: 0 1em 2em black, 0 0 0.5em black;
+}
+	.selectedMenu button {
+		background: rgba(255,255,255,0.1);
+		color: white;
+		font-size: 100%;
+		font-family: 'Press Start 2P';
+	}
+	.customerMenu {
+		background: #223344;
+	}
+	.craftMenu {
+		background: #443322;
+	}
+
+.remodel {
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+	.remodel h2 {
+		display: inline-block;
+	}
+	.remodel button {
+		display: inline-block;
+	}

@@ -99,36 +99,56 @@
 		<nav>
 			<button type="button" class="goto" data-state="mainmenu">Menu</button>
 		</nav>
-		<div id="game-topbar">
+		<div id="game-topbar" class="topbar">
 			<span class="coins">Coins: <span class="coinsNum"></span></span>
 			<span class="popularity">Popularity: <span class="popularityNum"></span></span>
 			<span class="served">Customers Served: <span class="servedNum"></span></span>
 		</div>
 		<div id="game-stage" class="stage"></div>
+	</div>
+	<div class="state remodel topbar">
+		<h2>Remodel</h2>
+		<button type="button" class="goto" data-state="game">Done</button>
+	</div>
+	<div class="state customerMenu selectedMenu">
+		<h2>Customer Menu</h2>
+		<ul>
+			<li>Annoyed</li>
+			<li>Hungry</li>
+			<li>Disgusted</li>
+			<li>Bored</li>
+			<li>Rating</li>
+		</ul>
+		<button type="button">Hire</button>
+		<button type="button">Ask to Leave</button>
+		<button type="button" class="goto" data-state="game">Cancel</button>
 	</div>	
-	<div class="state ownerMenu">
+	<div class="state ownerMenu selectedMenu">
 		<h2>Owner Menu</h2>
 		<button type="button">Cook</button>
 		<button type="button">Brew</button>
 		<button type="button">Serve</button>
 		<button type="button">Clear</button>
 		<button type="button">Clean</button>
+		<button type="button" class="goto" data-state="furniture">Buy/Sell Furniture</button>
+		<button type="button" class="goto" data-state="remodel">Remodel Walls/Floors</button>
+		<button type="button" class="goto" data-state="game">Cancel</button>
 	</div>
-	<div class="state craftMenu">
+	<div class="state craftMenu selectedMenu">
 		<h2>Craft Menu</h2>
 		<div class="progress"></div>
 		<button type="button">Cook</button>
 		<button type="button">Brew</button>
 		<button type="button">Serve</button>
-		<button type="button">Cancel</button>
+		<button type="button" class="goto" data-state="game">Cancel</button>
 	</div>
-	<div class="state placeMenu">
+	<div class="state placeMenu selectedMenu">
 		<h2>Place Menu</h2>
 		<div class="progress"></div>
 		<button type="button">Cook</button>
 		<button type="button">Brew</button>
 		<button type="button">Serve</button>
-		<button type="button">Cancel</button>
+		<button type="button" class="goto" data-state="game">Cancel</button>
 	</div>
 	<footer class="stateFooter">
 		Developed in 48 hours for the
