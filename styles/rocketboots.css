@@ -34,6 +34,9 @@ body > * {
 		height: 100%;
 		background: rgba(0,0,0,0.8);
 	}
+	.state h2 {
+		font-size: 200%;
+	}
 	.game h2 {
 		display: none;
 	}
@@ -89,6 +92,7 @@ button {
 	border: solid 1px #999;
 	border-radius: 0.2em;
 	cursor: pointer;
+	outline: none;
 }
 nav .disk {
 	display: none;

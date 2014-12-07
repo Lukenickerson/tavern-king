@@ -25,14 +25,15 @@
 		this.grid = {
 			size : { x: 1, y: 1 }
 		};
-		this.entityGroups = ["all", "physical", "movable"];
+		this.entityGroups = ["all", "physical", "movable", "physics"];
 		this.entities = { 
 			"all" : [],
 			"physical" : [],
-			"movable" : []
+			"movable" : [],
+			"physics" : []
 		};
 		// World traits / booleans
-		this.isBounded = true;
+		this.isBounded = false;
 	}
 	// Sets
 	World.prototype.setSizeRange = function(min, max){
@@ -55,8 +56,9 @@
 	
 	
 	// Adds
-	World.prototype.addEntity = function(ent, groups){
+	World.prototype.addEntity = function(ent, groups, isFront){
 		if (typeof groups == "string") groups = [groups];
+		if (typeof isFront != "boolean") isFront = false;
 		var grp = "", groupIndex = -1;
 		// Add entity to groups
 		for (var t = 0; t < groups.length; t++){
@@ -65,7 +67,11 @@
 			//console.log(ent);
 			if (!ent.isInGroup(grp)) {  // Is entity not in this group yet?
 				groupIndex = (this.entities[grp].push(ent) - 1);
-				ent.groups.push(grp);
+				if (isFront) {
+					ent.groups = [grp].concat(ent.groups);
+				} else {
+					ent.groups.push(grp);
+				}
 				ent.groupIndices[grp] = groupIndex;
 			}
 		}
@@ -74,7 +80,9 @@
 	World.prototype.addNewEntity = function(name, groups){
 		var ent = new this.Entity(name,this);
 		groups = groups.concat("all");
-		return this.addEntity(ent, groups);
+		ent = this.addEntity(ent, groups);
+		this.categorizeEntitiesByGroup();
+		return ent;
 	}
 	World.prototype.addEntityGroup = function(type){
 		var typeId = this.entityGroups.indexOf(type);
@@ -92,7 +100,7 @@
 		if (remGroups.indexOf("all") != -1) {	
 			remGroups = ent.groups.join("/").split("/");
 		}
-		console.log("Remove groups", remGroups, ent.groups);
+		//console.log("Remove groups", remGroups, ent.groups);
 		var remGroup = "", remGroupIndex = -1;
 		// Loop over groups to remove
 		for (var g = 0; g < remGroups.length; g++){
@@ -100,10 +108,12 @@
 			if (ent.isInGroup(remGroup)) {
 				
 				remGroupIndex = ent.groupIndices[remGroup];
-				console.log("Removing", remGroup, remGroupIndex);
+				//console.log("Removing", remGroup, remGroupIndex);
 				// Remove from group array
 				//this.entities[remGroup].splice(remGroupIndex, 1);
+				// ^ can't splice this out or all the indices get messed up
 				this.entities[remGroup][remGroupIndex] = null;
+				// *** ^ This might cause memory issues??
 				// Remove from entity's properties
 				ent.groups.splice( ent.groups.indexOf(remGroup), 1 );
 				delete ent.groupIndices[remGroup];
@@ -142,7 +152,7 @@
 			if (d < nearestDistance) {
 				nearestEnt = ent;
 				nearestDistance = d;
-			}
+			}			
 		});
 		return nearestEnt;
 	}
@@ -153,9 +163,17 @@
 		}		
 	}
 	World.prototype.loopOverEntities = function(type, fn){
-		this.loopOver(this.entities[type], fn);	
+		var ents;
+		if (typeof this.entities[type] == 'object') {
+			ents = this.entities[type];
+			for (var i = 0, el = ents.length; i < el; i++){
+				if (ents[i] != null) {
+					fn(i, ents[i]);
+				}
+			}			
+		}
 	}
-	World.prototype.keepCoordsInRange = function(coords){
+	World.prototype.keepCoordsInBounds = function(coords){
 		var wasOutOfRange = false;
 		if (coords.x < this.min.x) {
 			coords.x = this.min.x;
@@ -173,13 +191,21 @@
 		}
 		return wasOutOfRange;
 	}
+	World.prototype.isEntityInBounds = function(ent){
+		var coords = ent.pos;
+		return (coords.x >= this.min.x && coords.x <= this.max.x
+			&& coords.y >= this.min.y && coords.y <= this.max.y);	
+	}
 	World.prototype.categorizeEntitiesByGroup = function(){
 		var w = this;
 		w.entities.physical = [];
 		w.entities.movable = [];
+		w.entities.physics = [];
 		w.loopOverEntities("all", function(entityIndex, ent){
-			if (ent.isPhysical) 
+			if (ent.isPhysical) {
 				w.entities.physical.push(ent);
+				if (ent.isMovable) w.entities.physics.push(ent);
+			}
 			if (ent.isMovable) 
 				w.entities.movable.push(ent);
 		});
@@ -196,12 +222,13 @@
 		this.groups	= [];
 		this.groupIndices = {};
 		this.world 	= world;
+		this.stageOffset = new Coords(0,0); // for minor pixel offsets
 		this.pos 	= new Coords(0,0);
 		this.vel 	= new Coords(0,0);
 		this.mass	= 1;
 		this.size 	= new Coords(world.grid.size.x, world.grid.size.y);
 		this._halfSize = new Coords(world.grid.size.x/2, world.grid.size.y/2);
-		this.radius = (world.grid.size.x/2);
+		this.radius = parseInt(world.grid.size.x/2);
 		this.image	= null;
 		this.color 	= "#666";
 		this.collisionShape = "circle"; // *** doesn't matter yet

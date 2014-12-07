@@ -87,7 +87,7 @@
 	Stage.prototype.addClickEvent = function(fn){
 		var s = this;
 		$(this.element).click(function(e){
-			console.log("Clicked stage", e.offsetX, e.offsetY);
+			//console.log("Clicked stage", e.offsetX, e.offsetY);
 			fn(s.getPosition(e.offsetX, e.offsetY), e);
 		});
 	}
@@ -158,7 +158,11 @@
 	Stage.prototype.Layer.prototype.connectEntities = function(ents)
 	{
 		//this.entitiesArray.concat(ents);
-		this.entitiesArray.push(ents);
+		if (typeof ents == "object") {
+			this.entitiesArray.push(ents);
+		} else {
+			console.error("Incorrect entities. Cannot connect to layer.", ents);
+		}
 		return this;
 	}
 	Stage.prototype.Layer.prototype.draw = function()
@@ -168,7 +172,7 @@
 			ent = {};
 		this.ctx.clearRect(0,0,this.size.x,this.size.y);
 		this.ctx.fillStyle = '#ffff66';
-		this.ctx.strokeStyle = '#ff0000';
+		this.ctx.strokeStyle = '#000000';
 		this.ctx.imageSmoothingEnabled = false; // http://stackoverflow.com/questions/18547042/resizing-a-canvas-image-without-blurring-it
 		this.ctx.save();
 		//this.ctx.scale(this.canvasScale,this.canvasScale);
@@ -185,10 +189,13 @@
 	{
 		var stageXY = this.stage.getStageXY(ent.pos);
 		var stageXYOffset = {
-			x : stageXY.x - ent._halfSize.x,
-			y : stageXY.y - ent._halfSize.y
+			x : stageXY.x - ent._halfSize.x + ent.stageOffset.x,
+			y : stageXY.y - ent._halfSize.y + ent.stageOffset.y
 		};
 		//console.log("PosX", ent.pos.x, "PosY", ent.pos.y, "stageXY", stageXY, "stageXYOffset", stageXYOffset);
+		//this.ctx.save();
+		//this.ctx.translate(this.element.width/2, this.element.height/2);
+		//this.ctx.rotate(90 *Math.PI/180);
 		
 		if (ent.image) {
 			this.ctx.drawImage( ent.image,
@@ -206,10 +213,21 @@
 				this.ctx.strokeRect(stageXYOffset.x, stageXYOffset.y, ent.size.x, ent.size.y);
 			}
 		}
+	
+		if (typeof ent.character == 'object') {
+			this.ctx.strokeStyle = ent.color;
+			this.ctx.beginPath();
+			this.ctx.arc(stageXY.x, stageXY.y + 10, 2, 0, PI2);
+			this.ctx.stroke();	
+		}
+		//this.ctx.restore();
+		
+		/*
 		this.ctx.strokeStyle = ent.color;
 		this.ctx.beginPath();
 		this.ctx.arc(stageXY.x, stageXY.y, ent.radius, 0, PI2);
-		this.ctx.stroke();
+		this.ctx.stroke();	
+		*/
 	}
 
 

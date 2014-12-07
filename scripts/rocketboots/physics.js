@@ -12,9 +12,10 @@
 	Physics.prototype.apply = function(world){
 		var p = this;
 		// Loop over all movable entities
-		world.loopOverEntities("movable",function(entity1Index, ent1){	
+		world.loopOverEntities("physics",function(entity1Index, ent1){	
 			// Move according to velocity
 			ent1.pos.add( ent1.vel );
+			
 			// Collision detection
 			world.loopOverEntities("physical",function(entity2Index, ent2){
 				var r = ent1.pos.getDistance(ent2.pos);
@@ -38,7 +39,7 @@
 				}
 			});
 			if (ent1.world.isBounded) {
-				ent1.world.keepCoordsInRange(ent1.pos);
+				ent1.world.keepCoordsInBounds(ent1.pos);
 			}
 			
 		});

@@ -55,10 +55,12 @@
 		this.$view	= $('.state.'+ name);
 		this.start 	= null;
 		this.end 	= null;
+		this.update	= null;
 		this.type 	= settingsObj.type || null;
 		// Init
 		this.setStart(settingsObj.start);
 		this.setEnd(settingsObj.end);
+		this.setUpdate(settingsObj.update);
 	}
 	// Setters
 	sm.prototype.State.prototype.setStart = function(fn){
@@ -73,6 +75,11 @@
 		else this.end = function(){
 			this.$view.show();
 		};
+		return this;
+	}
+	sm.prototype.State.prototype.setUpdate = function(fn){
+		if (typeof fn == "function") this.update = fn;
+		else this.update = function(){	};
 		return this;
 	}
 	// Getters

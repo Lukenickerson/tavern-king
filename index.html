@@ -101,7 +101,7 @@
 		</nav>
 		<div id="game-topbar" class="topbar">
 			<span class="coins">Coins: <span class="coinsNum"></span></span>
-			<span class="popularity">Popularity: <span class="popularityNum"></span></span>
+			<span class="rating">Rating: <span class="ratingNum"></span></span>
 			<span class="served">Customers Served: <span class="servedNum"></span></span>
 		</div>
 		<div id="game-stage" class="stage"></div>
@@ -110,38 +110,53 @@
 		<h2>Remodel</h2>
 		<button type="button" class="goto" data-state="game">Done</button>
 	</div>
+	<div class="state furniture selectedMenu">
+		<h2>Furniture</h2>
+		<button type="button" class="buy" data-furniture="0">Cooking Pot</button>
+		<button type="button" class="buy" data-furniture="1">Barrel</button>
+		<button type="button" class="buy" data-furniture="2">Table</button>
+		<button type="button" class="goto" data-state="game">Close</button>
+	</div>
 	<div class="state customerMenu selectedMenu">
-		<h2>Customer Menu</h2>
-		<ul>
-			<li>Annoyed</li>
-			<li>Hungry</li>
-			<li>Disgusted</li>
-			<li>Bored</li>
-			<li>Rating</li>
+		<h2>Customer</h2>
+		<div class="action"></div>
+		<ul class="traitList">
+			<li>Hungry ?</li>
+			<li>Thirsty ?</li>
+			<li>Annoyed ?</li>
+			<li>Disgusted ?</li>
+			<li>Bored ?</li>
+			<li>Rating ?</li>
 		</ul>
-		<button type="button">Hire</button>
-		<button type="button">Ask to Leave</button>
-		<button type="button" class="goto" data-state="game">Cancel</button>
+		<!--- <button type="button">Hire</button> --->
+		<!--- <button type="button">Ask to Leave</button> --->
+		<button type="button" class="goto" data-state="game">Close</button>
 	</div>	
 	<div class="state ownerMenu selectedMenu">
-		<h2>Owner Menu</h2>
+		<h2>Tavern Owner</h2>
 		<button type="button">Cook</button>
-		<button type="button">Brew</button>
-		<button type="button">Serve</button>
+		<!--- button type="button">Brew</button> --->
+		<!--- <button type="button">Serve</button> --->
+		<!---
 		<button type="button">Clear</button>
 		<button type="button">Clean</button>
+		--->
 		<button type="button" class="goto" data-state="furniture">Buy/Sell Furniture</button>
 		<button type="button" class="goto" data-state="remodel">Remodel Walls/Floors</button>
-		<button type="button" class="goto" data-state="game">Cancel</button>
+		<button type="button" class="goto" data-state="game">Close</button>
 	</div>
 	<div class="state craftMenu selectedMenu">
-		<h2>Craft Menu</h2>
-		<div class="progress"></div>
-		<button type="button">Cook</button>
-		<button type="button">Brew</button>
-		<button type="button">Serve</button>
-		<button type="button" class="goto" data-state="game">Cancel</button>
+		<h2>Crafting</h2>
+		<div class="craftProgress"></div>
+		<button type="button" class="openSubList">Cook</button>
+		<ul class="subList cookList">
+		</ul>
+		<!--- <button type="button">Brew</button> --->
+		<!--- <button type="button">Serve</button> --->
+		<button type="button" class="goto" data-state="game">Close</button>
 	</div>
+
+	<!---
 	<div class="state placeMenu selectedMenu">
 		<h2>Place Menu</h2>
 		<div class="progress"></div>
@@ -150,6 +165,7 @@
 		<button type="button">Serve</button>
 		<button type="button" class="goto" data-state="game">Cancel</button>
 	</div>
+	--->
 	<footer class="stateFooter">
 		Developed in 48 hours for the
 		<a href="http://ludumdare.com/compo/category/ld-31-2/" target="_blank">
