@@ -759,19 +759,27 @@ RocketBoots.ready(function(){
 	g.gameLoop = new rb.Looper(function(){
 		g.world.applyPhysics(g.physics);
 		g.stage.draw();
+		var r = g.dice.roll1d(4);
 		for (var x = 0; x < g.world.size.x; x += 20) {
 			for (var y = 0; y < g.world.size.y; y += 20) {
 				//console.log(".");
 				var point = new rb.Coords(x, y);
+				var illum = 0;
 				g.world.loopOverEntities("illumination", function(entIndex, ent){
 					var d = ent.pos.getDistance( point );
-					var op = Math.max(Math.min((d/1100), 1.0), 0.2);
-					var stageXY = g.stage.getStageXY(point);
-					g.mainLayer.ctx.fillStyle = 'rgba(0,0,0,' + op + ')';
-					g.mainLayer.ctx.fillRect(
-						stageXY.x - 10, stageXY.y - 10, 20, 20
-					);
+					if (d == 0) d = 0.00000001;
+					// Adds a flicker -- will add to post-compo
+					
+					illum += Math.max( ((216 + r) / d), 0);
 				});
+				illum = Math.min(illum, 1.0);
+				//console.log(illum);
+				var op = Math.max(1 - illum, 0.1);
+				var stageXY = g.stage.getStageXY(point);
+				g.mainLayer.ctx.fillStyle = 'rgba(0,0,0,' + op + ')';
+				g.mainLayer.ctx.fillRect(
+					stageXY.x - 10, stageXY.y - 10, 20, 20
+				);
 			}
 		}
 		
