@@ -1,0 +1,120 @@
+/* DeathRayGames Branding */
+footer {
+	padding-right: 5em;
+	background-repeat: no-repeat, no-repeat;
+	background-position: 95% center, 85% center;
+	background-size: 64px 64px, 64px 64px;
+	background-image: url('../images/deathray_icon_64x64.png'), url('../images/boots1_flat_300.png');
+}
+/* Tavern King branding */
+header {
+	background-image: none;
+	font-family: 'UnifrakturCook';
+	text-align: center;
+}
+/* Styles */
+body {
+	background: #221113;
+}
+h2 {
+	font-family: 'UnifrakturCook';
+}
+body > .game {
+	padding: 0;
+	background-color: inherit;
+}
+#game-topbar, .topbar {
+	color: white;
+	padding: 1em 0;
+	background: inherit;
+	font-size: 130%;
+}
+#game-topbar > span {
+	display: inline-block;
+	margin: 0 2em;
+}
+.selectedMenu {
+	background: #332244;
+	color: white;
+	border: solid 0.25em white;
+	margin: 8% auto 0 auto;
+	padding: 2em 1em;
+	border-radius: 1em;
+	box-shadow: 0 1em 2em black, 0 0 0.5em black;
+}
+	.selectedMenu h2 {
+		margin-top: 0;
+	}
+	.selectedMenu button {
+		background: rgba(255,255,255,0.1);
+		color: white;
+		font-size: 100%;
+		font-family: 'Press Start 2P';
+	}
+	.selectedMenu button:hover {
+		background: rgba(255,255,255,0.18);
+	}
+	.selectedMenu.right {
+		margin: 8% 0 0 auto;
+		width: 50%;
+	}
+	.selectedMenu.left {
+		margin: 8% auto 0 0;
+		width: 50%;
+	}
+	.customerMenu {
+		background: #223344;
+	}
+	.craftMenu {
+		background: #443322;
+	}
+
+.action {
+	display: block;
+	float: right;
+	padding: 1em 1em;
+	font-size: 150%;
+	border-radius: 5em;
+	background: rgba(255,255,255,0.5);
+	color: #333;
+}
+	
+.remodel {
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+	.remodel h2 {
+		display: inline-block;
+	}
+	.remodel button {
+		display: inline-block;
+	}
+
+	.traitList,
+	.subList {
+		text-align: left;
+		padding: 0;
+		margin: 0.5em 0;
+		list-style: none;
+		font-size: 130%;
+	}
+	.traitList > li {
+		display: block;
+		margin: 0.5em 0;
+	}
+	.subList > li {
+		display: block;
+		margin: 0;
+	}
+	.subList button {
+		margin-left: 0;
+		padding: 0.5em;
+		text-align: left;
+		font-family: inherit;
+		
+	}
+
+.intro p {
+	font-size: 140%;
+}

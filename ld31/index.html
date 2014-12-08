@@ -1,0 +1,221 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Tavern King</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="styles/rocketboots.css" />
+	<link rel="stylesheet" href="styles/game.css" />
+	<link href='http://fonts.googleapis.com/css?family=Contrail+One|Press+Start+2P|UnifrakturCook:700' rel='stylesheet' type='text/css'>
+	<link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+</head>
+<body>
+
+	<header class="stateHeader goto" data-state="mainmenu">
+		<h1>Tavern King</h1>
+	</header>
+	<div class="state boot">
+		Booting Up
+	</div>	
+	<div class="state preload">
+		<h2>Loading</h2>
+	</div>
+	<section class="state mainmenu">
+		<h2>Main Menu</h2>
+		<nav>
+		<ul>
+			<li><button type="button" class="goto non-disk play" data-state="intro">
+				Play</button></li>
+			<li><button type="button" class="goto disk has-game continue" data-state="game">
+				Continue</button></li>
+			<li><button type="button" class="goto disk has-game save" data-state="save">
+				Save</button></li>
+			<li><button type="button" class="goto disk new" data-state="new">
+				New</button></li>
+			<li><button type="button" class="goto disk load" data-state="load">
+				Load</button></li>
+			<li><button type="button" class="goto settings" data-state="settings">
+				Settings</button></li>
+			<li><button type="button" class="goto help" data-state="help">
+				Help</button></li>
+			<li><button type="button" class="goto credits" data-state="credits">
+				Credits</button></li>
+			<li><button type="button" class="goto share" data-state="share">
+				Share</button></li>
+		</ul>
+		</nav>
+		
+	</section>
+	<section class="state help">
+		<h2>Help</h2>
+		<nav>
+			<button type="button" class="goto" data-state="mainmenu">Back</button>
+		</nav>
+		<a href="http://ludumdare.com/compo/ludum-dare-31/?action=preview&uid=17861"
+			target="_blank"
+			class="button">Ludum Dare Entry Page</a>
+		<a href="http://deathraygames.tumblr.com/search/tavern+king"
+			target="_blank"
+			class="button">Tumblr #tavern king</a>
+	</section>
+	<section class="state settings">
+		<h2>Settings</h2>
+		<nav>
+			<button type="button" class="goto" data-state="mainmenu">Back</button>
+			<button type="button" class="toggleSound">Toggle Sound</button>
+			<button type="button" class="playMusic">Play Music</button>
+		</nav>
+	</section>
+	<section class="state credits">
+		<h2>Credits</h2>
+		<nav>
+			<button type="button" class="goto" data-state="mainmenu">Back</button>
+		</nav>
+		<p>
+			Thanks to Christina for her unwavering support and fueling 
+			of this hobby.
+		</p>
+		<p>
+			Thanks to Jeff Beach for the theme/concept idea - "Fantasy Tavern Management".
+		</p>
+		<nav>
+			<a href="https://twitter.com/deathraygames"
+				class="button"
+				target="_blank">Twitter</a>
+			<a href="http://deathraygames.tumblr.com/"
+				class="button"
+				target="_blank">Tumblr</a>
+		</nav>
+
+	</section>
+	<section class="state share">
+		<h2>Share</h2>
+		<nav>
+			<button type="button" class="goto" data-state="mainmenu">Back</button>
+			<a href="http://twitter.com/home?status=Playing Tavern King! @deathraygames"
+				class="button"
+				target="_blank">Tweet on Twitter</a>
+			<!---
+			<a href="mailto:&body=Playing Tavern King! @deathraygames"
+				class="button"
+				target="_blank">Email to a Friend</a>
+			--->
+		</nav>
+		<p>
+			Thank you for sharing this game!
+		</p>
+	</section>
+	
+	<div class="state game">
+		<h2>Game</h2>
+		<nav>
+			<button type="button" class="goto" data-state="mainmenu">Menu</button>
+		</nav>
+		<div id="game-topbar" class="topbar">
+			<span class="coins">Coins: <span class="coinsNum"></span></span>
+			<span class="rating">Rating: <span class="ratingNum"></span></span>
+			<span class="served">Customers Served: <span class="servedNum"></span></span>
+		</div>
+		<div id="game-stage" class="stage"></div>
+	</div>
+	<div class="state intro selectedMenu">
+		<h2>Intro</h2>
+		<p>
+			You've recently inherited a big barn and an old crown 
+			from your great-uncle Grumpbeard. Now you can finally
+			begin your dream of starting a tavern!
+		</p>
+		<p>
+			Lots of people have showed for for the grand
+			opening. Maybe with enough food
+			people will rate your tavern highly and you
+			can become the TAVERN KING!
+		</p>
+		<button type="button" class="goto" data-state="game">Ok</button>
+	</div>
+	<div class="state remodel topbar">
+		<h2>Remodel</h2>
+		<button type="button" class="goto" data-state="game">Done</button>
+	</div>
+	<div class="state furniture selectedMenu">
+		<h2>Furniture</h2>
+		<button type="button" class="buy" data-furniture="0">Cooking Pot</button>
+		<button type="button" class="buy" data-furniture="1">Barrel</button>
+		<button type="button" class="buy" data-furniture="2">Table</button>
+		<button type="button" class="goto" data-state="game">Close</button>
+	</div>
+	<div class="state customerMenu selectedMenu">
+		<h2>Customer</h2>
+		<div class="action"></div>
+		<ul class="traitList">
+			<li>Hungry ?</li>
+			<li>Thirsty ?</li>
+			<li>Annoyed ?</li>
+			<li>Disgusted ?</li>
+			<li>Bored ?</li>
+			<li>Rating ?</li>
+		</ul>
+		<!--- <button type="button">Hire</button> --->
+		<!--- <button type="button">Ask to Leave</button> --->
+		<button type="button" class="goto" data-state="game">Close</button>
+	</div>	
+	<div class="state ownerMenu selectedMenu">
+		<h2>Tavern Owner</h2>
+		<!--- <button type="button">Cook</button> --->
+		<!--- button type="button">Brew</button> --->
+		<!--- <button type="button">Serve</button> --->
+		<!---
+		<button type="button">Clear</button>
+		<button type="button">Clean</button>
+		--->
+		<button type="button" class="goto" data-state="furniture">Buy/Sell Furniture</button>
+		<button type="button" class="goto" data-state="remodel">Remodel Walls/Floors</button>
+		<button type="button" class="goto" data-state="game">Close</button>
+	</div>
+	<div class="state craftMenu selectedMenu">
+		<h2>Crafting</h2>
+		<div class="craftProgress"></div>
+		<button type="button" class="openSubList">Cook</button>
+		<ul class="subList cookList">
+		</ul>
+		<!--- <button type="button">Brew</button> --->
+		<!--- <button type="button">Serve</button> --->
+		<button type="button" class="goto" data-state="game">Close</button>
+	</div>
+
+	<!---
+	<div class="state placeMenu selectedMenu">
+		<h2>Place Menu</h2>
+		<div class="progress"></div>
+		<button type="button">Cook</button>
+		<button type="button">Brew</button>
+		<button type="button">Serve</button>
+		<button type="button" class="goto" data-state="game">Cancel</button>
+	</div>
+	--->
+	<footer class="stateFooter">
+		Developed in 48 hours for the
+		<a href="http://ludumdare.com/compo/category/ld-31-2/" target="_blank">
+			Ludum Dare 31 game jam, theme "Entire game on one screen"
+		</a>
+		<br>
+		by Luke Nickerson
+		<a href="https://twitter.com/deathraygames" target="_blank">@deathraygames</a>
+		<br>
+		using the
+		<a href="https://github.com/Lukenickerson/rocketboots" 
+			target="_blank"
+			title="RocketBoots - Starter Kit for Web Games - visit the GitHub repo">
+			RocketBoots web game starter kit - alpha-v0.0
+		</a>
+		<br>
+		&copy; 2014
+	</footer>
+
+
+<script src="scripts/rocketboots/core.js"></script>
+<script src="scripts/game.js"></script>
+
+
+</body>
+</html>
