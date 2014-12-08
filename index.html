@@ -24,7 +24,7 @@
 		<h2>Main Menu</h2>
 		<nav>
 		<ul>
-			<li><button type="button" class="goto non-disk play" data-state="game">
+			<li><button type="button" class="goto non-disk play" data-state="intro">
 				Play</button></li>
 			<li><button type="button" class="goto disk has-game continue" data-state="game">
 				Continue</button></li>
@@ -66,6 +66,7 @@
 		<nav>
 			<button type="button" class="goto" data-state="mainmenu">Back</button>
 			<button type="button" class="toggleSound">Toggle Sound</button>
+			<button type="button" class="playMusic">Play Music</button>
 		</nav>
 	</section>
 	<section class="state credits">
@@ -74,11 +75,19 @@
 			<button type="button" class="goto" data-state="mainmenu">Back</button>
 		</nav>
 		<p>
-			[CREDITS]
+			Thanks to Christina for her unwavering support and fueling 
+			of this hobby.
+		</p>
+		<p>
+			Thanks to Jeff Beach for the theme/concept idea - "Fantasy Tavern Management".
 		</p>
 		<nav>
-			<button type="button" class="">Follow on Twitter</button>
-			<button type="button" class="">Follow on Tumblr</button>
+			<a href="https://twitter.com/deathraygames"
+				class="button"
+				target="_blank">Twitter</a>
+			<a href="http://deathraygames.tumblr.com/"
+				class="button"
+				target="_blank">Tumblr</a>
 		</nav>
 
 	</section>
@@ -86,8 +95,14 @@
 		<h2>Share</h2>
 		<nav>
 			<button type="button" class="goto" data-state="mainmenu">Back</button>
-			<button type="button" class="">Tweet on Twitter</button>
-			<button type="button" class="">Email to a friend</button>
+			<a href="http://twitter.com/home?status=Playing Tavern King! @deathraygames"
+				class="button"
+				target="_blank">Tweet on Twitter</a>
+			<!---
+			<a href="mailto:&body=Playing Tavern King! @deathraygames"
+				class="button"
+				target="_blank">Email to a Friend</a>
+			--->
 		</nav>
 		<p>
 			Thank you for sharing this game!
@@ -105,6 +120,21 @@
 			<span class="served">Customers Served: <span class="servedNum"></span></span>
 		</div>
 		<div id="game-stage" class="stage"></div>
+	</div>
+	<div class="state intro selectedMenu">
+		<h2>Intro</h2>
+		<p>
+			You've recently inherited a big barn and an old crown 
+			from your great-uncle Grumpbeard. Now you can finally
+			begin your dream of starting a tavern!
+		</p>
+		<p>
+			Lots of people have showed for for the grand
+			opening. Maybe with enough with enough food,
+			people will rate your tavern highly and you
+			can become the TAVERN KING!
+		</p>
+		<button type="button" class="goto" data-state="game">Ok</button>
 	</div>
 	<div class="state remodel topbar">
 		<h2>Remodel</h2>

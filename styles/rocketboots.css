@@ -82,8 +82,9 @@ header, footer {
 .mainmenu ul > li {
 	display: block;
 }
-button {
+button, .button {
 	display: block;
+	width: 60%;
 	min-width: 60%;
 	padding: 1em 0.5em;
 	margin: 0.1em auto;
@@ -93,6 +94,9 @@ button {
 	border-radius: 0.2em;
 	cursor: pointer;
 	outline: none;
+	text-decoration: none;
+	background-color: #ccc;
+	color: #000;
 }
 nav .disk {
 	display: none;

@@ -214,12 +214,14 @@
 			}
 		}
 	
+		/*
 		if (typeof ent.character == 'object') {
 			this.ctx.strokeStyle = ent.color;
 			this.ctx.beginPath();
 			this.ctx.arc(stageXY.x, stageXY.y + 10, 2, 0, PI2);
 			this.ctx.stroke();	
 		}
+		*/
 		//this.ctx.restore();
 		
 		/*

@@ -34,13 +34,31 @@ RocketBoots.ready(function(){
 		,"meal" : "food1.png"
 	});
 	
+	g.sounds.loadSounds(["tk_beat", "coins", "durr"], "sounds/", ".wav");
+	
+	
 	//=========== GAME CONSTANTS
 	g.PI2 = Math.PI*2;
 	
 	
 	//============================================================= STATES ====
 	
+	g.hasSeenIntro = false;
 	g.selectedEnt = null;
+	
+	$('.playMusic').click(function(){
+		g.sounds.on();
+		g.sounds.play("tk_beat", true);
+	});
+	$('.toggleSound').click(function(){
+		var isSoundOn = g.sounds.toggle();
+		if (isSoundOn) {
+			//g.sounds.play("tk_beat", true);
+		} else {
+			g.sounds.stop("tk_beat");
+		}
+		alert("Sound is " + ((isSoundOn) ? "ON" : "OFF"));
+	});
 	
 	// Tie looping to the Game State
 	g.state.get("game").setStart(function(){
@@ -71,7 +89,22 @@ RocketBoots.ready(function(){
 		this.$view.hide().removeClass("right").removeClass("left");
 	}
 	
-	g.state.add("ownerMenu", {
+	g.state.add("intro", {
+		start: 	function(){ 
+			if (g.hasSeenIntro) {
+				g.state.transition("game");
+			} else {
+				this.$view.show(); 
+				g.state.get("game").$view.show();
+				g.hasSeenIntro = true;
+			}
+		},
+		end: 	function(){ 
+			this.$view.hide(); 
+		},
+		//type: 	"selectedMenu"
+		
+	}).add("ownerMenu", {
 		start: 	selectedStart,
 		end: 	selectedEnd,
 		type: 	"selectedMenu"
@@ -185,11 +218,13 @@ RocketBoots.ready(function(){
 	);
 	g.world.grid.size = { x: 64, y: 64 };
 	
+	/*
 	g.world.setSizeRange(
 		{ x: 0, y: 0 }, 	// min
-		{ x: 1024, y: 640 }	// max = 64x16, 64x11
+		{ x: 1024, y: 640 }	// max 
 	);
 	g.world.grid.size = { x: 128, y: 128 };	
+	*/
 	
 	// Setup Tavern elements, stats, functions and top bar
 	g.tavern = {
@@ -199,7 +234,7 @@ RocketBoots.ready(function(){
 			servedNum : 	$('.servedNum')	
 		},
 		customerCount : 0,
-		coins : 1000,
+		coins : 100,
 		rating: 0,
 		served : 0,
 		canAfford : function(coins){
@@ -208,11 +243,11 @@ RocketBoots.ready(function(){
 		buy : function(cost, fn){
 			if (this.canAfford(cost)) {
 				this.addCoins(-1 * cost);
-				// *** play coin noise
 				fn();
 				return true;
 			} else {
-				// *** play thud/error noise
+				// play thud/error noise
+				g.sounds.play("durr");
 				alert("You cannot afford that.\nYou need " 
 					+ (cost - this.coins) + " more coins."
 				);
@@ -229,6 +264,7 @@ RocketBoots.ready(function(){
 			});
 		},
 		addCoins : function(n){
+			g.sounds.play("coins");
 			this.coins += parseInt(n);
 			this.$elts.coinsNum.html(this.coins);
 		},
@@ -326,6 +362,14 @@ RocketBoots.ready(function(){
 		ent.isPhysical = false;
 		// Unique for items
 		ent.recipe = recipe;
+
+	}
+	
+	g.setPosAwayFromEdge = function(pos){
+		if (pos.x <= 0) pos.x += g.world.grid.size.x;
+		else if (pos.x >= g.world.max.x) pos.x -= g.world.grid.size.x;
+		if (pos.y <= 0) pos.y += g.world.grid.size.y;
+		else if (pos.y >= g.world.max.y) pos.y -= g.world.grid.size.y;	
 	}
 	
 	g.createFurniture = function(type, pos){
@@ -335,10 +379,7 @@ RocketBoots.ready(function(){
 		);
 		if (typeof pos == "undefined") {
 			pos = g.world.getRandomGridPosition();
-			if (pos.x <= 0) pos.x += g.world.grid.size.x;
-			else if (pos.x >= g.world.max.x) pos.x -= g.world.grid.size.x;
-			if (pos.y <= 0) pos.y += g.world.grid.size.y;
-			else if (pos.y >= g.world.max.y) pos.y -= g.world.grid.size.y;
+			g.setPosAwayFromEdge(pos);
 		}
 		ent.pos.set(pos);
 		
@@ -361,6 +402,9 @@ RocketBoots.ready(function(){
 			case "table":
 				ent.allowPlacement = true;
 				break;
+		}
+		if (type == "pot") {
+			g.world.addEntity(ent, "illumination");
 		}
 	}
 	
@@ -437,7 +481,7 @@ RocketBoots.ready(function(){
 			ent : null
 		};
 		this.targets = [new rb.Coords()];
-		this.brainCooldown = g.dice.roll1d(10);
+		this.brainCooldown = g.dice.roll1d(2);
 		this.speed = 0.5 + g.dice.roll1d(5)/10;
 		this.viewingDistance = 200;
 		this.itemRange = (ent.size.x * 1.2);
@@ -485,8 +529,8 @@ RocketBoots.ready(function(){
 
 			case "think":					// Come up with a new goal
 				if (c.annoyed < 15 || c.tired <= 15) c.goal.action = "leave";
-				else if (c.hungry < 50) c.goal.action = "eat";
-				else if (c.bored < 50) c.goal.action = "walk";
+				else if (c.hungry < 60) c.goal.action = "eat";
+				else if (c.bored < 75) c.goal.action = "walk";
 				else c.goal.action = "rest";
 				c.action = "plan";
 				c.entity.color = "#55f";
@@ -611,7 +655,10 @@ RocketBoots.ready(function(){
 	
 	g.createCustomer = function(name, pos){
 		var ent = g.world.addNewEntity(name, ["customer", "game", "customerMenu"]);
-		if (typeof pos == "undefined") pos = g.world.getRandomGridPosition();
+		if (typeof pos == "undefined") {
+			pos = g.world.getRandomGridPosition();
+			g.setPosAwayFromEdge(pos);
+		}
 		ent.pos.set(pos);
 		ent.image = g.images.get("dwarf" + g.dice.roll1d(6));		
 		ent.character = new g.Character(name, "dwarf", ent);
@@ -712,6 +759,22 @@ RocketBoots.ready(function(){
 	g.gameLoop = new rb.Looper(function(){
 		g.world.applyPhysics(g.physics);
 		g.stage.draw();
+		for (var x = 0; x < g.world.size.x; x += 20) {
+			for (var y = 0; y < g.world.size.y; y += 20) {
+				//console.log(".");
+				var point = new rb.Coords(x, y);
+				g.world.loopOverEntities("illumination", function(entIndex, ent){
+					var d = ent.pos.getDistance( point );
+					var op = Math.max(Math.min((d/1100), 1.0), 0.2);
+					var stageXY = g.stage.getStageXY(point);
+					g.mainLayer.ctx.fillStyle = 'rgba(0,0,0,' + op + ')';
+					g.mainLayer.ctx.fillRect(
+						stageXY.x - 10, stageXY.y - 10, 20, 20
+					);
+				});
+			}
+		}
+		
 		g.tavern.customerCount = 0;
 		g.world.loopOverEntities("customer", function(entIndex, ent){
 			g.tavern.customerCount++;
@@ -773,13 +836,13 @@ RocketBoots.ready(function(){
 		
 	});
 	
-	//g.state.transition("mainmenu");
+	g.state.transition("mainmenu");
 
 	window.setTimeout(function(){
 		// Start 'er up!
 		g.stage.draw(true);
 		g.tavern.drawTopBar();
-		g.state.transition("game");
+		//g.state.transition("game");
 	},500);
 
 });
