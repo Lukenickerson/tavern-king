@@ -733,13 +733,13 @@ RocketBoots.ready(function(){
 			case "wall":
 				ne.isHighlighted = true;
 				g.makeFloor(ne);
-				//g.world.categorizeEntitiesByGroup();
+				g.world.categorizeEntitiesByGroup();
 				g.stage.draw(true);
 				break;				
 			case "floor":
 				ne.isHighlighted = true;
 				g.makeWall(ne);
-				//g.world.categorizeEntitiesByGroup();
+				g.world.categorizeEntitiesByGroup();
 				g.stage.draw(true);
 				break;
 			// *** Add other clickable items?
