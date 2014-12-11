@@ -5,23 +5,12 @@
 */
 (function(){
 
-	if (typeof RocketBoots.Coords == "function") {
-		var Coords = RocketBoots.Coords;
-	} else if (typeof Coords == "function") {
-		var Coords = Coords;
-	} else {
-		console.error("Coords class not found in world.js. This may cause errors.");
-		var Coords = function(x,y){
-			this.x = x;
-			this.y = y;
-		}
-	}
 	//==== WORLD
 	var World = function(){
 		this.dimensions = 2;
-		this.min = new Coords(-300,-300);
-		this.max = new Coords(300, 300);
-		this.size = new Coords(600, 600);
+		this.min = new this.Coords(-300,-300);
+		this.max = new this.Coords(300, 300);
+		this.size = new this.Coords(600, 600);
 		this.grid = {
 			size : { x: 1, y: 1 }
 		};
@@ -35,13 +24,15 @@
 		// World traits / booleans
 		this.isBounded = false;
 	}
+	//World.prototype = new Entity();
+	
 	// Sets
 	World.prototype.setSizeRange = function(min, max){
 		this.min.set(min);
 		this.max.set(max);
 		var sizeX = Math.abs(max.x) + Math.abs(min.x);
 		var sizeY = Math.abs(max.y) + Math.abs(min.y);
-		this.size.set( new Coords(sizeX, sizeY) );
+		this.size.set( new this.Coords(sizeX, sizeY) );
 	}
 	World.prototype.snapToGrid = function(pos){
 		pos.x = Math.round(pos.x / this.grid.size.x) * this.grid.size.x;
@@ -129,7 +120,7 @@
 		}
 		var x = dice.getRandomIntegerBetween(this.min.x, this.max.x);
 		var y = dice.getRandomIntegerBetween(this.min.y, this.max.y);
-		return new Coords(x,y);
+		return new this.Coords(x,y);
 	}
 	World.prototype.getRandomGridPosition = function(){
 		var randPos = this.getRandomPosition();
@@ -138,7 +129,7 @@
 	World.prototype.getCenter = function(){
 		var x = this.min.x + (this.size.x / 2);
 		var y = this.min.y + (this.size.y / 2);
-		return new Coords(x,y);
+		return new this.Coords(x,y);
 	}
 	World.prototype.getNearestEntity = function(pos, range, type){
 		var nearestEnt = null;
@@ -213,48 +204,12 @@
 	World.prototype.applyPhysics = function(physics){
 		physics.apply(this);	
 	}
-	
 
+	// Bring in a pointer to the Coords class from RocketBoots or a global object
+	World.prototype.Coords = (typeof RocketBoots.Coords == "function") ? RocketBoots.Coords : Coords;
+	World.prototype.Entity = (typeof RocketBoots.Entity == "function") ? RocketBoots.Entity : Entity;
 	
-	//==== Entity
-	World.prototype.Entity = function(name, world){
-		this.name = name;
-		this.groups	= [];
-		this.groupIndices = {};
-		this.world 	= world;
-		this.stageOffset = new Coords(0,0); // for minor pixel offsets
-		this.pos 	= new Coords(0,0);
-		this.vel 	= new Coords(0,0);
-		this.mass	= 1;
-		this.size 	= new Coords(world.grid.size.x, world.grid.size.y);
-		this._halfSize = new Coords(world.grid.size.x/2, world.grid.size.y/2);
-		this.radius = parseInt(world.grid.size.x/2);
-		this.image	= null;
-		this.color 	= "#666";
-		this.collisionShape = "circle"; // *** doesn't matter yet
-		// various on/off states
-		this.isHighlighted 	= false;
-		this.isPhysical 	= true;
-		this.isMovable		= true;
-		// Custom draw functions
-		this.customDraw = {
-			highlighted : null
-		};
-	}
-	World.prototype.Entity.prototype.getType = function(){
-		return this.groups[0];
-	}
-	World.prototype.Entity.prototype.isInGroup = function(group){
-		return (this.groups.indexOf(group) == -1) ? false : true;
-	}
-	/*
-	World.prototype.Entity.prototype.isEqual = function(ent){
-		return "????";
-	}
-	*/
-
-	
-	
+	// Install as RocketBoots component
 	if (typeof RocketBoots == "object") {
 		RocketBoots.installComponent("world", "World", World);
 	} else window.World = World;
