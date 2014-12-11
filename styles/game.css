@@ -72,12 +72,15 @@ body > .game {
 .action {
 	display: block;
 	float: right;
-	padding: 1em 1em;
+	padding: 0.5em 1em;
 	font-size: 150%;
 	border-radius: 5em;
-	background: rgba(255,255,255,0.5);
-	color: #333;
+	background: rgba(0,0,0,0.25);
+	color: rgba(255,255,255,0.5);
 }
+	.action:before {
+		content: "action: ";
+	}
 	
 .remodel {
 	position: absolute;
