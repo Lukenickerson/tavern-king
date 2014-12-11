@@ -222,6 +222,7 @@
 			this.ctx.stroke();	
 		}
 		*/
+		
 		//this.ctx.restore();
 		
 		/*

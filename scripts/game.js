@@ -160,15 +160,14 @@ RocketBoots.ready(function(){
 				.off("click").on("click", "button", function(e){
 					var recipeIndex = parseInt($(e.target).data("recipe"));
 					var recipe = g.items.recipes[recipeIndex];
-					var cost = g.items.getRecipeCost(recipe);
-					// If you can afford it, cook up a number of items
-					g.tavern.buyCooking(recipe, function(){
-						g.selectedEnt.craftingRecipe = recipe;
-						for (var i = 0; i < recipe.makes; i++){
-							g.createItem(recipe, "meal", g.selectedEnt.pos);
-						}
-						s.update();
+					
+					g.owner.setGoal({ 
+						action: "cook", 
+						ent: 	g.selectedEnt, 
+						recipe: recipe 
 					});
+					
+					g.state.transition("game");
 				});
 			s.$view.find('.openSubList').off("click").on("click", function(e){
 				$(this).next('.subList').slideDown();
@@ -473,18 +472,22 @@ RocketBoots.ready(function(){
 	g.Character = function(name, race, ent){
 		this.name 		= name;
 		this.race 		= race;
+		this.isAutomaton = false;
 		this.action		= "think";
 		this.actionEnt 	= null;
 		this.goal = {
-			action : null,
-			pos : null,
-			ent : null
+			action : 	null,
+			pos : 		null,
+			ent : 		null,
+			recipe :	null
 		};
-		this.targets = [new rb.Coords()];
+		this.targetPos = new rb.Coords();
 		this.brainCooldown = g.dice.roll1d(2);
 		this.speed = 0.5 + g.dice.roll1d(5)/10;
 		this.viewingDistance = 200;
-		this.itemRange = (ent.size.x * 1.2);
+		this.itemRange 		= (ent.size.x * 1.1); 	// how close to interact w/ something
+		this.arrivalRange	= 10; //(ent.size.x / 2); 	// how close to arrive when walking
+		this.slowRange		= (ent.size.x * 2);		// how close to arrival before slowing down
 		
 		this.hungry 	= 50;
 		this.thirsty 	= 50;
@@ -496,6 +499,18 @@ RocketBoots.ready(function(){
 		
 		this.entity = ent;
 		this.entity.radius = parseInt(g.world.grid.size.x/3);
+	}
+	g.Character.prototype.setAction = function(action){
+		this.action = action;
+		return this;
+	}
+	g.Character.prototype.setGoal = function(goalObj){
+		if (typeof goalObj == "string") goalObj = { action: goalObj };
+		this.goal.action 	= goalObj.action;
+		this.goal.pos 		= (goalObj.pos || null);
+		this.goal.ent		= (goalObj.ent || null)
+		this.goal.recipe	= (goalObj.recipe || null);
+		return this;
 	}
 	g.Character.prototype.passTime = function(){
 		var c = this;
@@ -528,14 +543,20 @@ RocketBoots.ready(function(){
 		switch (c.action) {
 
 			case "think":					// Come up with a new goal
-				if (c.annoyed < 15 || c.tired <= 15) c.goal.action = "leave";
-				else if (c.hungry < 60) c.goal.action = "eat";
-				else if (c.bored < 75) c.goal.action = "walk";
-				else c.goal.action = "rest";
+				c.entity.vel.multiply(0.2);
+				if (c.isAutomaton) {
+				
+				} else {
+					if (c.annoyed < 15 || c.tired <= 15) c.goal.action = "leave";
+					else if (c.hungry < 60) c.goal.action = "eat";
+					else if (c.bored < 75) c.goal.action = "walk";
+					else c.goal.action = "rest";
+				}
 				c.action = "plan";
 				c.entity.color = "#55f";
 				break;
 			case "plan":					// Figure out how to get the goal
+				c.entity.vel.multiply(0.2);
 				c.plan();
 				c.entity.color = "#ff5";
 				break;
@@ -545,17 +566,17 @@ RocketBoots.ready(function(){
 					c.action = "think";
 					c.brainCooldown = g.dice.roll1d(20);
 				} else {
-					var dist = c.entity.pos.getDistance( c.targets[0] );
-					if (dist < 10) {
-						c.entity.pos.set( c.targets[0] );
+					var dist = c.entity.pos.getDistance( c.targetPos );
+					if (dist < c.arrivalRange) {
+						c.entity.pos.set( c.targetPos );
 						c.entity.vel.clear();
 						c.action = "think";
-					} else if (dist < 30) {
-						c.entity.vel.set(c.entity.pos.getUnitVector( c.targets[0] ));
+					} else if (dist < c.slowRange) {
+						c.entity.vel.set(c.entity.pos.getUnitVector( c.targetPos ));
 						c.entity.vel.multiply(c.speed/10);
 
 					} else {
-						c.entity.vel.set(c.entity.pos.getUnitVector( c.targets[0] ));
+						c.entity.vel.set(c.entity.pos.getUnitVector( c.targetPos ));
 						c.entity.vel.multiply(c.speed);
 					}
 				}
@@ -609,6 +630,32 @@ RocketBoots.ready(function(){
 			case "rest":
 				c.action = "rest";	// that was easy
 				break;
+			case "cook":
+				if (c.goal.ent == null) {
+					c.goal.ent = g.world.getNearestEntity(c.entity.pos, c.viewingDistance, "pot");
+				}
+				// Still no destination?
+				if (c.goal.ent == null) {
+					c.setRandomTarget();
+					c.action = "walk";
+				} else {
+					var d = c.entity.pos.getDistance(c.goal.ent.pos);
+					if (d <= c.itemRange) {
+						var cost = g.items.getRecipeCost(c.goal.recipe);
+						// If you can afford it, cook up a number of items
+						g.tavern.buyCooking(c.goal.recipe, function(){
+							c.goal.ent.craftingRecipe = c.goal.recipe;
+							for (var i = 0; i < c.goal.recipe.makes; i++){
+								g.createItem(c.goal.recipe, "meal", c.goal.ent.pos);
+							}
+						});
+						c.setGoal("rest");
+					} else {
+						c.targetPos.set(c.goal.ent.pos);
+						c.action = "walk";
+					}
+				}
+				break;
 			case "eat":
 				// Find nearest meal and go towards it
 				var ne = g.world.getNearestEntity(c.entity.pos, c.viewingDistance, "meal");
@@ -626,14 +673,14 @@ RocketBoots.ready(function(){
 						c.action = "grab";
 						c.actionEnt = ne;
 					} else {
-						c.targets[0].set(ne.pos);
+						c.targetPos.set(ne.pos);
 						c.action = "walk";
 					}
 				}
 				break;
 			case "leave":
 				var pos = new rb.Coords(c.entity.pos.x, g.world.size.y + 100);
-				this.targets[0].set(pos);
+				this.targetPos.set(pos);
 				//console.log("Time to leave", pos);
 				c.action = "walk";
 				break;
@@ -647,10 +694,12 @@ RocketBoots.ready(function(){
 	g.Character.prototype.setRandomTarget = function(){
 		// *** avoid walls
 		var randPos = g.world.getRandomPosition();
-		this.targets[0].set(randPos);
+		this.targetPos.set(randPos);
+		return this;
 	}
 	g.Character.prototype.vote = function(){
 		g.tavern.addRating(this.rating);
+		return this;
 	}
 	
 	g.createCustomer = function(name, pos){
@@ -663,11 +712,17 @@ RocketBoots.ready(function(){
 		ent.image = g.images.get("dwarf" + g.dice.roll1d(6));		
 		ent.character = new g.Character(name, "dwarf", ent);
 		return ent.character;
-	}
+	};
 	
-	for (var i = 0; i < 20; i++) {
-		g.createCustomer("customer-"+i);
-	}
+	(function(){
+		var c;
+		for (var i = 0; i < 20; i++) {
+			c = g.createCustomer("initial-customer-"+i);
+			if (g.dice.roll(4) > 1) {
+				c.setRandomTarget().setAction("walk");
+			}
+		}
+	})();
 	
 	g.owner = new g.Character(
 		"Tavern Owner",
@@ -675,11 +730,12 @@ RocketBoots.ready(function(){
 		g.world.addNewEntity("Owner", ["owner", "game"])
 	);
 	
-	g.owner.entity.mass *= 2;
-	g.owner.speed *= 2;
+	g.owner.entity.mass *= 3;
+	g.owner.speed *= 4;
 	g.owner.entity.pos.set( g.world.getRandomGridPosition() );
 	g.owner.entity.image = g.images.get("owner");
 	g.owner.entity.character = g.owner;
+	g.owner.isAutomaton = true;
 	
 	// Done adding entities
 	// So setup lists of physical and movable...
@@ -708,8 +764,8 @@ RocketBoots.ready(function(){
 		console.log(">> Clicked", ne);
 		
 		if (ne == null) {
-			g.owner.targets[0].set(p);
-			g.owner.action = "walk";
+			g.owner.targetPos.set(p);
+			g.owner.setAction("walk");
 			return false;
 		} else {
 			g.selectedEnt = ne;
@@ -754,17 +810,14 @@ RocketBoots.ready(function(){
 		}
 	});	
 	
-	//============================================== Loops
-	// Setup Loops & modulus actions
-	g.gameLoop = new rb.Looper(function(){
-		g.world.applyPhysics(g.physics);
-		g.stage.draw();
+	g.drawShading = function(){
 		var r = g.dice.roll1d(4);
-		for (var x = 0; x < g.world.size.x; x += 20) {
-			for (var y = 0; y < g.world.size.y; y += 20) {
+		var x, y, point, illum, stageXY;
+		for (x = 0; x < g.world.size.x; x += 20) {
+			for (y = 0; y < g.world.size.y; y += 20) {
 				//console.log(".");
-				var point = new rb.Coords(x, y);
-				var illum = 0;
+				point = new rb.Coords(x, y);
+				illum = 0;
 				g.world.loopOverEntities("illumination", function(entIndex, ent){
 					var d = ent.pos.getDistance( point );
 					if (d == 0) d = 0.00000001;
@@ -774,13 +827,37 @@ RocketBoots.ready(function(){
 				});
 				illum = Math.min(illum, 1.0);
 				//console.log(illum);
-				var op = Math.max(1 - illum, 0.1);
-				var stageXY = g.stage.getStageXY(point);
+				op = Math.max(1 - illum, 0.1);
+				stageXY = g.stage.getStageXY(point);
 				g.mainLayer.ctx.fillStyle = 'rgba(0,0,0,' + op + ')';
 				g.mainLayer.ctx.fillRect(
 					stageXY.x - 10, stageXY.y - 10, 20, 20
 				);
 			}
+		}	
+	};
+	
+	g.drawCircle = function(pos, r){
+		var stageXY = g.stage.getStageXY(pos);
+		g.mainLayer.ctx.strokeStyle = "#fff";
+		g.mainLayer.ctx.fillStyle = "rgba(255,255,255,0.15)";
+		g.mainLayer.ctx.beginPath();
+		g.mainLayer.ctx.arc(stageXY.x, stageXY.y, r, 0, g.PI2);
+		g.mainLayer.ctx.stroke();
+		g.mainLayer.ctx.fill();	
+	}
+	
+	//============================================== Loops
+	// Setup Loops & modulus actions
+	g.gameLoop = new rb.Looper(function(){
+		g.world.applyPhysics(g.physics);
+		g.stage.draw();
+		g.drawShading();
+
+		if (g.owner.goal.ent != null) {
+			g.drawCircle(g.owner.goal.ent.pos, 20);
+		} else {
+			g.drawCircle(g.owner.targetPos, 10);
 		}
 		
 		g.tavern.customerCount = 0;
@@ -825,7 +902,7 @@ RocketBoots.ready(function(){
 	g.selectedLoop = new rb.Looper(function(){
 		g.stage.draw();
 		if (g.selectedEnt != null) {
-			var stageXY = g.stage.getStageXY(g.selectedEnt.pos);
+			
 			g.selectCircleSize += g.selectCircleDirection;
 			if (g.selectCircleSize > 100) {
 				g.selectCircleDirection = -1;
@@ -833,12 +910,7 @@ RocketBoots.ready(function(){
 				g.selectCircleDirection = 1;
 			}
 			
-			g.mainLayer.ctx.strokeStyle = "#fff";
-			g.mainLayer.ctx.fillStyle = "rgba(255,255,255,0.15)";
-			g.mainLayer.ctx.beginPath();
-			g.mainLayer.ctx.arc(stageXY.x, stageXY.y, g.selectCircleSize, 0, g.PI2);
-			g.mainLayer.ctx.stroke();
-			g.mainLayer.ctx.fill();
+			g.drawCircle(g.selectedEnt.pos, g.selectCircleSize);
 			g.mainLayer.drawEntity(g.selectedEnt);
 		}
 		
@@ -849,8 +921,9 @@ RocketBoots.ready(function(){
 	window.setTimeout(function(){
 		// Start 'er up!
 		g.stage.draw(true);
+		g.drawShading();
 		g.tavern.drawTopBar();
 		//g.state.transition("game");
-	},500);
+	},100);
 
 });
