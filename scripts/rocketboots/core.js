@@ -26,6 +26,7 @@ var RocketBoots = {
 		o.addComponentToGame(gameObj, "looper", "Looper");
 		o.addComponentToGame(gameObj, "dice", "Dice");
 		o.addComponentToGame(gameObj, "physics", "Physics");
+		o.addComponentToGame(gameObj, "entity", "Entity");
 		o.addComponentToGame(gameObj, "world", "World");
 		// If game-stage exists, then add it to the game, otherwise don't.
 		if ($('#game-stage').length > 0) {

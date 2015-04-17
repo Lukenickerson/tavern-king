@@ -2,15 +2,16 @@
 	World
 	World class
 	By Luke Nickerson, 2014
+
 */
 (function(){
 
 	//==== WORLD
 	var World = function(){
 		this.dimensions = 2;
-		this.min = new this.Coords(-300,-300);
-		this.max = new this.Coords(300, 300);
-		this.size = new this.Coords(600, 600);
+		this.min = new this.Coords(-(this.size.x/2),-(this.size.y/2));
+		this.max = new this.Coords((this.size.x/2),(this.size.y/2));
+		//this.size = new this.Coords(600, 600);
 		this.grid = {
 			size : { x: 1, y: 1 }
 		};
@@ -24,7 +25,8 @@
 		// World traits / booleans
 		this.isBounded = false;
 	}
-	//World.prototype = new Entity();
+	//console.log(RocketBoots);
+	World.prototype = new RocketBoots.Entity();
 	
 	// Sets
 	World.prototype.setSizeRange = function(min, max){
@@ -32,7 +34,7 @@
 		this.max.set(max);
 		var sizeX = Math.abs(max.x) + Math.abs(min.x);
 		var sizeY = Math.abs(max.y) + Math.abs(min.y);
-		this.size.set( new this.Coords(sizeX, sizeY) );
+		this.setSize(sizeX, sizeY);
 	}
 	World.prototype.snapToGrid = function(pos){
 		pos.x = Math.round(pos.x / this.grid.size.x) * this.grid.size.x;
@@ -69,7 +71,7 @@
 		return ent;
 	}
 	World.prototype.addNewEntity = function(name, groups){
-		var ent = new this.Entity(name,this);
+		var ent = new this.Entity(name, this, this.grid.size);
 		groups = groups.concat("all");
 		ent = this.addEntity(ent, groups);
 		this.categorizeEntitiesByGroup();
@@ -206,7 +208,7 @@
 	}
 
 	// Bring in a pointer to the Coords class from RocketBoots or a global object
-	World.prototype.Coords = (typeof RocketBoots.Coords == "function") ? RocketBoots.Coords : Coords;
+	//World.prototype.Coords = (typeof RocketBoots.Coords == "function") ? RocketBoots.Coords : Coords;
 	World.prototype.Entity = (typeof RocketBoots.Entity == "function") ? RocketBoots.Entity : Entity;
 	
 	// Install as RocketBoots component
